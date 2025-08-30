@@ -7,3 +7,4 @@
 bin
 obj
 packages
+/TradeAgent.Infrastructure/Migrations
