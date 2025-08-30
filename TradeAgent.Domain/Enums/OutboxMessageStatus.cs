@@ -1,4 +1,4 @@
-﻿namespace TradeAgent.Infrastructure.Enums
+﻿namespace TradeAgent.Domain.Enums
 {
 	public enum OutboxMessageStatus
 	{

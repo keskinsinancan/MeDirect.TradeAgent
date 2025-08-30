@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TradeAgent.Domain.Entites;
-using TradeAgent.Infrastructure.Outbox;
+using TradeAgent.Domain.OutBox;
 
 namespace TradeAgent.Infrastructure.Data
 {
@@ -9,6 +9,7 @@ namespace TradeAgent.Infrastructure.Data
 		public TradeAgentDbContext(DbContextOptions<TradeAgentDbContext> options) : base(options) { }
 
 		public DbSet<Trade> Trades => Set<Trade>();
+		public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

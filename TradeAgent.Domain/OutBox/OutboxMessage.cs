@@ -1,6 +1,6 @@
-﻿using TradeAgent.Infrastructure.Enums;
+﻿using TradeAgent.Domain.Enums;
 
-namespace TradeAgent.Infrastructure.Outbox
+namespace TradeAgent.Domain.OutBox
 {
 	public sealed class OutboxMessage
 	{
