@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
 using TradeAgent.Infrastructure.Data;
 
 namespace TradeAgent.API
@@ -38,7 +37,7 @@ namespace TradeAgent.API
 
 		private static void ConfigureDb(IServiceCollection services, IConfiguration configuration)
 		{
-			var connectionString = configuration.GetConnectionString("DefaultConnection");
+			var connectionString = configuration.GetConnectionString("DefaultDbConnection");
 
 			services.AddDbContext<TradeAgentDbContext>(options =>
 				options.UseNpgsql(

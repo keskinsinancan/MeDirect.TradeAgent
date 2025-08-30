@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TradeAgent.Domain.Entites;
+using TradeAgent.Infrastructure.Outbox;
 
 namespace TradeAgent.Infrastructure.Data
 {
@@ -13,22 +14,39 @@ namespace TradeAgent.Infrastructure.Data
 		{
 			base.OnModelCreating(modelBuilder);
 
-			modelBuilder.Entity<Trade>(b =>
+			modelBuilder.Entity<Trade>(x =>
 			{
-				b.HasKey(t => t.Id);
+				x.ToTable("trades");
 
-				b.OwnsOne(t => t.Asset, i =>
+				x.HasKey(t => t.Id);
+
+				x.OwnsOne(t => t.Asset, i =>
 				{
-					i.Property(p => p.Name).HasColumnName("InstrumentName").IsRequired();
-					i.Property(p => p.Symbol).HasColumnName("InstrumentSymbol").IsRequired();
+					i.Property(p => p.Name).HasColumnName("AssetName").IsRequired();
+					i.Property(p => p.Symbol).HasColumnName("AssetSymbol").IsRequired();
 				});
 
-				b.Property(t => t.Side).IsRequired();
-				b.Property(t => t.Quantity).IsRequired();
-				b.Property(t => t.Price).IsRequired();
-				b.Property(t => t.Currency).IsRequired();
-				b.Property(t => t.CounterpartyId).IsRequired();
-				b.Property(t => t.ExecutedAtUtc).IsRequired();
+				x.Property(t => t.Side).IsRequired();
+				x.Property(t => t.Quantity).IsRequired();
+				x.Property(t => t.Price).IsRequired();
+				x.Property(t => t.Currency).IsRequired();
+				x.Property(t => t.CounterpartyId).IsRequired();
+				x.Property(t => t.ExecutedAtUtc).IsRequired();
+			});
+
+			modelBuilder.Entity<OutboxMessage>(x =>
+			{
+				x.ToTable("outboxmessages");
+				x.HasKey(o => o.Id);
+
+				x.Property(o => o.Type)
+				 .IsRequired();
+
+				x.Property(o => o.Payload)
+				 .IsRequired();
+
+				x.Property(o => o.Status)
+				 .IsRequired();
 			});
 		}
 	}

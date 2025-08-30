@@ -6,7 +6,7 @@ namespace TradeAgent.Domain.Events
 {
 	public sealed record TradeExecutedDomainEvent
 		(	Guid TradeId,
-			Asset Instrument,
+			Asset Asset,
 			TradeSide Side,
 			decimal Quantity,
 			decimal Price,

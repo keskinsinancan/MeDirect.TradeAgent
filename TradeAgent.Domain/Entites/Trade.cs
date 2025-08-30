@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using TradeAgent.Domain.Common;
+﻿using TradeAgent.Domain.Common;
 using TradeAgent.Domain.Enums;
 using TradeAgent.Domain.Events;
 using TradeAgent.Domain.ValueObjects;
@@ -11,6 +10,7 @@ namespace TradeAgent.Domain.Entites
 		public Asset Asset{ get; private set; }
 		public TradeSide Side { get; private set; }
 		public decimal Quantity { get; private set; }
+		//todo : Make a money value object for price
 		public decimal Price { get; private set; }
 		public string Currency { get; private set; } = default!;
 		public string CounterpartyId { get; private set; } = default!;

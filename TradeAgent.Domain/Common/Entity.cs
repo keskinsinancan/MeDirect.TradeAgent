@@ -1,4 +1,4 @@
-﻿using TradeAgent.Domain.Common.Interfaces;
+﻿using TradeAgent.Domain.Common.Abstractions;
 
 namespace TradeAgent.Domain.Common
 {
