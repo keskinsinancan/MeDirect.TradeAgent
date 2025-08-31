@@ -7,6 +7,7 @@ namespace TradeAgent.Domain.Entites
 {
 	public sealed class Trade : Entity
 	{
+		private Trade() { } // For EF Core
 		public Asset Asset { get; private set; }
 		public TradeSide Side { get; private set; }
 		public decimal Quantity { get; private set; }
@@ -16,7 +17,6 @@ namespace TradeAgent.Domain.Entites
 		public string CounterpartyId { get; private set; } = default!;
 		public Guid UserId { get; private set; }
 		public DateTime ExecutedAtUtc { get; private set; }
-		private Trade() { } // For EF Core
 
 		private Trade(
 			Asset asset,
@@ -38,7 +38,7 @@ namespace TradeAgent.Domain.Entites
 			UserId = userId;
 			ExecutedAtUtc = executedAtUtc;
 
-			AddDomainEvent(new TradeExecutedDomainEvent(
+			AddDomainEvent(new TradeExecutedEvent(
 				Id,
 				Asset,
 				Side,

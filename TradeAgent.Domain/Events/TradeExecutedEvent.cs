@@ -3,7 +3,7 @@ using TradeAgent.Domain.ValueObjects;
 
 namespace TradeAgent.Domain.Events
 {
-	public sealed record TradeExecutedDomainEvent
+	public sealed record TradeExecutedEvent
 		(	Guid TradeId,
 			Asset Asset,
 			TradeSide Side,

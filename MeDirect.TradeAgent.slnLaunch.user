@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Api + Consumer",
+    "Projects": [
+      {
+        "Path": "TradeAgent.API\\TradeAgent.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "TradeAgent.Consumer\\TradeAgent.Consumer.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

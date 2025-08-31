@@ -9,7 +9,6 @@ namespace TradeAgent.Infrastructure.Data
 	public class TradeAgentDbContext : DbContext
 	{
 		public TradeAgentDbContext(DbContextOptions<TradeAgentDbContext> options) : base(options) { }
-
 		public DbSet<Trade> Trades => Set<Trade>();
 		public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 

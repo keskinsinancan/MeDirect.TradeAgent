@@ -26,7 +26,7 @@ namespace TradeAgent.Infrastructure.Messaging
 			using var channel = await conn.CreateChannelAsync();
 
 			await channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct);
-			await channel.QueueDeclareAsync(_options.QueueName, false, false, false, null);
+			await channel.QueueDeclareAsync(_options.QueueName, true, false, false, null);
 			await channel.QueueBindAsync(_options.QueueName, _options.ExchangeName, routingKey, null);
 
 			string json;
