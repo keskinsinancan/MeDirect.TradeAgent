@@ -2,7 +2,6 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TradeAgent.Consumer
 {
@@ -22,9 +21,7 @@ namespace TradeAgent.Consumer
 
 			IConnection conn = await factory.CreateConnectionAsync();
 
-			// Create channel
 			var channel = await conn.CreateChannelAsync();
-
 			await channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct);
 			await channel.QueueDeclareAsync(_options.QueueName, true, false, false, null);
 			await channel.QueueBindAsync(_options.QueueName, _options.ExchangeName, _options.RoutingKey, null);
@@ -33,16 +30,12 @@ namespace TradeAgent.Consumer
 			consumer.ReceivedAsync += async (ch, ea) =>
 			{
 				var body = ea.Body.ToArray();
-				// copy or deserialise the payload
-				// and process the message
-				// ...
 				var message = Encoding.UTF8.GetString(body);
 				Console.WriteLine($"[x] Received: {message}");
 
 				await channel.BasicAckAsync(ea.DeliveryTag, false);
 			};
-			// this consumer tag identifies the subscription
-			// when it has to be cancelled
+
 			string consumerTag = await channel.BasicConsumeAsync(_options.QueueName, false, consumer);
 		}
 	}
