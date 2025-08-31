@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using System.Runtime;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TradeAgent.Infrastructure.Settings;
 
 namespace TradeAgent.Infrastructure.Messaging
@@ -19,29 +17,32 @@ namespace TradeAgent.Infrastructure.Messaging
 				UserName = _options.Username,
 				Password = _options.Password,
 				HostName = _options.Host,
-				Port = _options.Port,			
+				Port = _options.Port,
 			};
 
-			// Async connection
-			await using var connection = await factory.CreateConnectionAsync();
+			IConnection conn = await factory.CreateConnectionAsync();
 
-			// Channel oluşturma (senkron)
-			using var channel = connection.CreateModel();  // <- sadece bu var, async değil
+			// Create channel
+			using var channel = await conn.CreateChannelAsync();
 
-			// Exchange
-			channel.ExchangeDeclare(exchange: _options.Exchange, type: ExchangeType.Fanout, durable: true);
+			await channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct);
+			await channel.QueueDeclareAsync(_options.QueueName, false, false, false, null);
+			await channel.QueueBindAsync(_options.QueueName, _options.ExchangeName, routingKey, null);
 
-			// Mesajı serileştir
-			var json = JsonSerializer.Serialize(message);
+			string json;
+
+			if (message is string s)
+				json = s;
+			else
+				json = JsonSerializer.Serialize(message);
+
 			var body = Encoding.UTF8.GetBytes(json);
 
-			// Yayınla
-			channel.BasicPublish(
-				exchange: _options.Exchange,
-				routingKey: routingKey,
-				basicProperties: null,
-				body: body
-			);
+			await channel.BasicPublishAsync(
+			  exchange: _options.ExchangeName,
+			  routingKey: routingKey,
+			  body: body
+		  );
 		}
 	}
 }

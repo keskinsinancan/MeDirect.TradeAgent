@@ -26,7 +26,7 @@ namespace TradeAgent.API.Workers
 				{
 					try
 					{
-						_publisher.Publish(message.Payload, message.Type);
+						await _publisher.Publish(message.Payload, message.Type);
 						message.MarkProcessed(DateTime.UtcNow);
 						_logger.LogInformation("Published message {Id}", message.Id);
 					}
