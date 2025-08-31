@@ -29,7 +29,7 @@ namespace TradeAgent.Consumer
 			IConnection conn = await factory.CreateConnectionAsync();
 
 			// Create channel
-			using var channel = await conn.CreateChannelAsync();
+			var channel = await conn.CreateChannelAsync();
 
 			await channel.ExchangeDeclareAsync("trades", ExchangeType.Direct);
 			await channel.QueueDeclareAsync("trade_executed", true, false, false, null);
