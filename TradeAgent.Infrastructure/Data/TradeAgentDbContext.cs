@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using TradeAgent.Domain.Common;
 using TradeAgent.Domain.Entites;
 using TradeAgent.Domain.OutBox;
 
@@ -10,6 +12,33 @@ namespace TradeAgent.Infrastructure.Data
 
 		public DbSet<Trade> Trades => Set<Trade>();
 		public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
+		public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			var domainEvents = ChangeTracker
+				.Entries<Entity>()
+				.SelectMany(e => e.Entity.DomainEvents)
+				.ToList();
+
+			foreach (var entry in ChangeTracker.Entries<Entity>())
+			{
+				entry.Entity.ClearDomainEvents();
+			}
+
+			foreach (var @event in domainEvents)
+			{
+				var outboxMessage = new OutboxMessage(
+					id: Guid.NewGuid(),
+					occurredOnUtc: @event.OccuredOnUtc,
+					type: @event.GetType().Name,
+					payload: JsonSerializer.Serialize(@event)
+				);
+
+				await OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+			}
+
+			return await base.SaveChangesAsync(cancellationToken);
+		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

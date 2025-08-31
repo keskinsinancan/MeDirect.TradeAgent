@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using TradeAgent.Application.Abstractions;
+using TradeAgent.Application.Abstractions.UnitOfWork;
 using TradeAgent.Infrastructure.Data;
 
 namespace TradeAgent.Infrastructure.Repositories

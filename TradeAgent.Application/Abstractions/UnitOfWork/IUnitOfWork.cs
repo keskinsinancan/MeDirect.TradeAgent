@@ -1,4 +1,4 @@
-﻿namespace TradeAgent.Application.Abstractions
+﻿namespace TradeAgent.Application.Abstractions.UnitOfWork
 {
 	public interface IUnitOfWork
 	{

@@ -1,5 +1,4 @@
-﻿using TradeAgent.Domain.Common;
-using TradeAgent.Domain.Enums;
+﻿using TradeAgent.Domain.Enums;
 using TradeAgent.Domain.ValueObjects;
 
 namespace TradeAgent.Domain.Events

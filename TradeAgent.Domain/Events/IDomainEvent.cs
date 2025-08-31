@@ -1,4 +1,4 @@
-﻿namespace TradeAgent.Domain.Common.Abstractions
+﻿namespace TradeAgent.Domain.Events
 {
 	public interface IDomainEvent
 	{

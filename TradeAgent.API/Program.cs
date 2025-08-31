@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TradeAgent.Application.Abstractions;
 using TradeAgent.Application.Abstractions.Repositories;
+using TradeAgent.Application.Abstractions.UnitOfWork;
+using TradeAgent.Application.Services;
+using TradeAgent.Application.Services.Abstractions;
 using TradeAgent.Infrastructure.Data;
 using TradeAgent.Infrastructure.Repositories;
 
@@ -31,6 +33,7 @@ namespace TradeAgent.API
 
 		private static void ConfigureApplicationServices(IServiceCollection services)
 		{
+			services.AddScoped<ITradeService, TradeService>();
 		}
 
 		private static void ConfigureRepositories(IServiceCollection services)
@@ -38,7 +41,6 @@ namespace TradeAgent.API
 			services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 			services.AddScoped<ITradeRepository, TradeRepository>();
 			services.AddScoped<IOutboxRepository, OutboxRepository>();
-
 		}
 
 		private static void ConfigureDb(IServiceCollection services, IConfiguration configuration)

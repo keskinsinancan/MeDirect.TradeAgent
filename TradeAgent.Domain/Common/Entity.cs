@@ -1,27 +1,17 @@
-﻿using TradeAgent.Domain.Common.Abstractions;
+﻿using TradeAgent.Domain.Events;
 
 namespace TradeAgent.Domain.Common
 {
 	public abstract class Entity
 	{
+		public Guid Id { get; protected set; }
 		private readonly List<IDomainEvent> _domainEvents = [];
-
 		public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-		public Guid Id { get; protected set; }
-
 		protected Entity() { }
-
-		// Add domain event
-		protected void AddDomainEvent(IDomainEvent domainEvent)
-		{
-			_domainEvents.Add(domainEvent);
-		}
-
-		// Clear domain events after publishing
+		protected void AddDomainEvent(IDomainEvent @event) => _domainEvents.Add(@event);
 		public void ClearDomainEvents() => _domainEvents.Clear();
 
-		// Equality based on Id
 		public override bool Equals(object? obj)
 		{
 			if (obj is not Entity other) return false;
