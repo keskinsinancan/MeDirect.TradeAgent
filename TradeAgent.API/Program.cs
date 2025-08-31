@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using TradeAgent.API.Workers;
 using TradeAgent.Application.Abstractions.Repositories;
 using TradeAgent.Application.Abstractions.UnitOfWork;
 using TradeAgent.Application.Services;
 using TradeAgent.Application.Services.Abstractions;
 using TradeAgent.Infrastructure.Data;
+using TradeAgent.Infrastructure.Messaging;
 using TradeAgent.Infrastructure.Repositories;
+using TradeAgent.Infrastructure.Settings;
 
 namespace TradeAgent.API
 {
@@ -18,6 +21,7 @@ namespace TradeAgent.API
 			ConfigureApplicationServices(builder.Services);
 			ConfigureRepositories(builder.Services);
 			ConfigureDb(builder.Services, builder.Configuration);
+			ConfigureRabbitMq(builder.Services, builder.Configuration);
 			var app = builder.Build();
 
 			Configure(app, app.Environment);
@@ -53,6 +57,13 @@ namespace TradeAgent.API
 					npgsqlOptions => npgsqlOptions.MigrationsAssembly("TradeAgent.Infrastructure")
 				)
 			);
+		}
+
+		private static void ConfigureRabbitMq(IServiceCollection services, IConfiguration configuration)
+		{
+			services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMq"));
+			services.AddHostedService<OutboxPublisher>();
+			services.AddSingleton<RabbitMqPublisher>();
 		}
 
 		private static void Configure(WebApplication app, IHostEnvironment env)
