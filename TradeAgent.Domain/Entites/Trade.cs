@@ -14,6 +14,7 @@ namespace TradeAgent.Domain.Entites
 		public decimal Price { get; private set; }
 		public string Currency { get; private set; } = default!;
 		public string CounterpartyId { get; private set; } = default!;
+		public Guid UserId { get; private set; }
 		public DateTime ExecutedAtUtc { get; private set; }
 		private Trade() { } // For EF Core
 
@@ -24,6 +25,7 @@ namespace TradeAgent.Domain.Entites
 			decimal price,
 			string currency,
 			string counterpartyId,
+			Guid userId,
 			DateTime executedAtUtc)
 		{
 			Id = Guid.NewGuid();
@@ -33,6 +35,7 @@ namespace TradeAgent.Domain.Entites
 			Price = price;
 			Currency = !string.IsNullOrWhiteSpace(currency) ? currency : throw new ArgumentException("Currency is required.");
 			CounterpartyId = !string.IsNullOrWhiteSpace(counterpartyId) ? counterpartyId : throw new ArgumentException("CounterpartyId is required.");
+			UserId = userId;
 			ExecutedAtUtc = executedAtUtc;
 
 			AddDomainEvent(new TradeExecutedDomainEvent(
@@ -43,6 +46,7 @@ namespace TradeAgent.Domain.Entites
 				Price,
 				Currency,
 				CounterpartyId,
+				UserId,
 				ExecutedAtUtc));
 		}
 
@@ -53,6 +57,7 @@ namespace TradeAgent.Domain.Entites
 			decimal price,
 			string currency,
 			string counterpartyId,
+			Guid userId,
 			DateTime executedAtUtc)
 		{
 			return new Trade(
@@ -62,6 +67,7 @@ namespace TradeAgent.Domain.Entites
 				price,
 				currency,
 				counterpartyId,
+				userId,
 				executedAtUtc);
 		}
 	}

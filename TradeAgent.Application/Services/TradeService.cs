@@ -22,6 +22,7 @@ namespace TradeAgent.Application.Services
 					price: request.Price,
 					currency: request.Currency,
 					counterpartyId: request.CounterpartyId,
+					userId: request.UserId,
 					executedAtUtc: DateTime.UtcNow
 				);
 
@@ -53,6 +54,7 @@ namespace TradeAgent.Application.Services
 			Price = trade.Price,
 			Currency = trade.Currency,
 			CounterpartyId = trade.CounterpartyId,
+			UserId = trade.UserId,
 			ExecutedAtUtc = trade.ExecutedAtUtc
 		};
 	}

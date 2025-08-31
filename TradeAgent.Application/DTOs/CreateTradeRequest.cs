@@ -9,5 +9,6 @@
 		public decimal Price { get; init; }
 		public string Currency { get; init; } = default!;
 		public string CounterpartyId { get; init; } = default!;
+		public Guid UserId { get; init; } = default!;
 	}
 }

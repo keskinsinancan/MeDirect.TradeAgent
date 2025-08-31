@@ -11,6 +11,7 @@ namespace TradeAgent.Domain.Events
 			decimal Price,
 			string Currency,
 			string CounterpartyId,
+			Guid UserId,
 			DateTime ExecutedAtUtc
 		) : DomainEvent;
 }
