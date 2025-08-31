@@ -1,29 +1,23 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TradeAgent.Consumer
 {
-	public class RabbitMqConsumer
+	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options)
 	{
-		private readonly string _hostname;
-		private readonly string _queueName;
-
-		public RabbitMqConsumer(string hostname, string queueName)
-		{
-			_hostname = hostname;
-			_queueName = queueName;
-		}
+		private readonly RabbitMqOptions _options = options.Value;
 
 		public async Task Start()
 		{
 			var factory = new ConnectionFactory
 			{
-				HostName = "localhost",
-				Port = 5672,
-				UserName = "admin",
-				Password = "admin123"
+				UserName = _options.Username,
+				Password = _options.Password,
+				HostName = _options.Host,
+				Port = _options.Port,
 			};
 
 			IConnection conn = await factory.CreateConnectionAsync();
@@ -31,9 +25,9 @@ namespace TradeAgent.Consumer
 			// Create channel
 			var channel = await conn.CreateChannelAsync();
 
-			await channel.ExchangeDeclareAsync("trades", ExchangeType.Direct);
-			await channel.QueueDeclareAsync("trade_executed", true, false, false, null);
-			await channel.QueueBindAsync("trade_executed", "trades", "TradeExecutedEvent", null);
+			await channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct);
+			await channel.QueueDeclareAsync(_options.QueueName, true, false, false, null);
+			await channel.QueueBindAsync(_options.QueueName, _options.ExchangeName, _options.RoutingKey, null);
 
 			var consumer = new AsyncEventingBasicConsumer(channel);
 			consumer.ReceivedAsync += async (ch, ea) =>
@@ -49,7 +43,7 @@ namespace TradeAgent.Consumer
 			};
 			// this consumer tag identifies the subscription
 			// when it has to be cancelled
-			string consumerTag = await channel.BasicConsumeAsync("trade_executed", false, consumer);
+			string consumerTag = await channel.BasicConsumeAsync(_options.QueueName, false, consumer);
 		}
 	}
 }

@@ -1,12 +1,22 @@
-﻿using TradeAgent.Consumer;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using TradeAgent.Consumer;
 
 class Program
 {
 	static async Task Main(string[] args)
 	{
-		Console.WriteLine("Starting TradeAgent.Consumer...");
+		var config = new ConfigurationBuilder()
+			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+			.Build();
 
-		var consumer = new RabbitMqConsumer("localhost", "trade_events_queue");
+		var services = new ServiceCollection();
+		services.Configure<RabbitMqOptions>(config.GetSection("RabbitMq"));
+		services.AddSingleton<RabbitMqConsumer>();
+
+		var provider = services.BuildServiceProvider();
+		var consumer = provider.GetRequiredService<RabbitMqConsumer>();
+
 		await consumer.Start();
 
 		Console.WriteLine("Consumer started. Press [enter] to exit.");

@@ -23,7 +23,7 @@ namespace TradeAgent.Infrastructure.Messaging
 			IConnection conn = await factory.CreateConnectionAsync();
 
 			// Create channel
-			using var channel = await conn.CreateChannelAsync();
+			var channel = await conn.CreateChannelAsync();
 
 			await channel.ExchangeDeclareAsync(_options.ExchangeName, ExchangeType.Direct);
 			await channel.QueueDeclareAsync(_options.QueueName, true, false, false, null);
