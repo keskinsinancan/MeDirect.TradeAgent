@@ -31,7 +31,7 @@ namespace TradeAgent.Infrastructure.Data
 					id: Guid.NewGuid(),
 					occurredOnUtc: @event.OccuredOnUtc,
 					type: @event.GetType().Name,
-					payload: JsonSerializer.Serialize(@event)
+					payload: JsonSerializer.Serialize(@event, @event.GetType())
 				);
 
 				await OutboxMessages.AddAsync(outboxMessage, cancellationToken);
