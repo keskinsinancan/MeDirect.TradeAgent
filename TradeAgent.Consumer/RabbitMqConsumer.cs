@@ -2,12 +2,14 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using TradeAgent.Logging;
 
 namespace TradeAgent.Consumer
 {
-	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options)
+	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options, DistributedDemoLogStore logStore)
 	{
 		private readonly RabbitMqOptions _options = options.Value;
+		private readonly DistributedDemoLogStore _logStore = logStore;
 
 		public async Task Start()
 		{
@@ -32,8 +34,8 @@ namespace TradeAgent.Consumer
 				var body = ea.Body.ToArray();
 				var message = Encoding.UTF8.GetString(body);
 				Console.WriteLine($"[x] Received: {message}");
-
 				await channel.BasicAckAsync(ea.DeliveryTag, false);
+				_logStore.Add($"Consumed message: {message}");
 			};
 
 			string consumerTag = await channel.BasicConsumeAsync(_options.QueueName, false, consumer);

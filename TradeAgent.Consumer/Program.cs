@@ -1,25 +1,42 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Serilog;
 using TradeAgent.Consumer;
+using TradeAgent.Logging;
 
 class Program
 {
 	static async Task Main(string[] args)
 	{
-		var config = new ConfigurationBuilder()
-			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+		var host = Host.CreateDefaultBuilder(args)
+			.UseTradeAgentLogging("TradeAgent.Consumer")
+			.ConfigureAppConfiguration((context, config) =>
+			{
+				config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+			})
+			.ConfigureServices((context, services) =>
+			{
+				services.Configure<RabbitMqOptions>(context.Configuration.GetSection("RabbitMq"));
+				services.AddSingleton<RabbitMqConsumer>();
+				services.AddSingleton<DistributedDemoLogStore>();
+				services.Configure<RedisOptions>(context.Configuration.GetSection("Redis"));
+				services.AddSingleton(provider =>
+				{
+					var options = provider.GetRequiredService<IOptions<RedisOptions>>().Value;
+					return new DistributedDemoLogStore(options.REDIS_CONNECTION);
+				});
+			})
 			.Build();
 
-		var services = new ServiceCollection();
-		services.Configure<RabbitMqOptions>(config.GetSection("RabbitMq"));
-		services.AddSingleton<RabbitMqConsumer>();
+		// Resolve consumer
+		var consumer = host.Services.GetRequiredService<RabbitMqConsumer>();
 
-		var provider = services.BuildServiceProvider();
-		var consumer = provider.GetRequiredService<RabbitMqConsumer>();
-
+		// Start consuming
 		await consumer.Start();
 
-		Console.WriteLine("Consumer started. Press [enter] to exit.");
+		Log.Information("Consumer started. Press [enter] to exit.");
 		Console.ReadLine();
 	}
 }

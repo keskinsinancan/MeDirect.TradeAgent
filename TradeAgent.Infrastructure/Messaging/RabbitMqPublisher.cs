@@ -6,9 +6,9 @@ using TradeAgent.Infrastructure.Settings;
 
 namespace TradeAgent.Infrastructure.Messaging
 {
-	public class RabbitMqPublisher(IOptions<RabbitMqOptions> options)
+	public class RabbitMqPublisher(IOptions<Settings.RabbitMqOptions> options)
 	{
-		private readonly RabbitMqOptions _options = options.Value;
+		private readonly Settings.RabbitMqOptions _options = options.Value;
 
 		public async Task Publish<T>(T message, string routingKey) where T : class
 		{
