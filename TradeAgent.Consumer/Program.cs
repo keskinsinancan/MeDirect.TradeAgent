@@ -30,10 +30,7 @@ class Program
 			})
 			.Build();
 
-		// Resolve consumer
 		var consumer = host.Services.GetRequiredService<RabbitMqConsumer>();
-
-		// Start consuming
 		await consumer.Start();
 
 		Log.Information("Consumer started. Press [enter] to exit.");

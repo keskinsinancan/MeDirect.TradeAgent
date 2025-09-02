@@ -74,7 +74,43 @@ This project follows DDD principles to ensure that business logic is central, co
 - `TradeAgent.Infrastructure` – Data and messaging implementations
 - `TradeAgent.API` – Web API and background workers
 - `TradeAgent.Consumer` – RabbitMQ event consumer
+- `TradeAgent.Logging` – Centralized logging uses redis to keep logs
 
-## License
+## Logging Architecture
 
-This project is licensed under the MIT License.
+### Overview
+
+This project uses **Serilog** for structured logging and a custom logging infrastructure to store and expose logs. All log messages are written to a Redis data store, enabling distributed log access and real-time log retrieval. 
+The logging logic is encapsulated in the `TradeAgent.Logging` project.
+
+### How Logging Works
+
+- **Serilog Integration:**  
+  Serilog is configured as the main logging provider in both the API and Consumer projects. It captures log events throughout the application lifecycle.
+
+- **Redis Log Storage:**  
+  The `TradeAgent.Logging` project contains the `DistributedDemoLogStore` class, which is responsible for writing log entries to a Redis instance. This allows logs to be shared and accessed across multiple services and instances.
+
+- **API Log Exposure:**  
+  The API project exposes an endpoint via the `DemoLogsController`. This controller retrieves log entries from Redis using the log store and returns them to clients, enabling real-time log monitoring and troubleshooting.
+
+### Configuration
+
+- **Redis Connection:**  
+  Redis connection settings are managed via the `RedisOptions` class and configured in the `appsettings.json` file for each project.
+
+- **Serilog Settings:**  
+  Serilog sinks and settings are also defined in `appsettings.json`, allowing flexible log routing and formatting.
+
+### Example Usage
+
+- Logs generated anywhere in the system are automatically sent to Redis via Serilog and the custom log store.
+- To view logs, send a request to the API’s `/api/demologs` endpoint (or the relevant route defined in `DemoLogsController`).
+
+### Projects Involved
+
+- `TradeAgent.Logging` – Implements the distributed log store and Redis integration.
+- `TradeAgent.API` – Exposes log retrieval endpoints.
+- `TradeAgent.Consumer` – Writes logs to Redis via Serilog and the logging project.
+
+This approach provides centralized, scalable, and real-time logging for all services in the platform.

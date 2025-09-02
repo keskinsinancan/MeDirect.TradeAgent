@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TradeAgent.Application\TradeAgent.Application.csproj" />
     <ProjectReference Include="..\TradeAgent.Domain\TradeAgent.Domain.csproj" />
+    <ProjectReference Include="..\TradeAgent.Logging\TradeAgent.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -6,11 +7,11 @@ using TradeAgent.Logging;
 
 namespace TradeAgent.Consumer
 {
-	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options, DistributedDemoLogStore logStore)
+	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options, DistributedDemoLogStore logStore, ILogger<RabbitMqConsumer> logger)
 	{
 		private readonly RabbitMqOptions _options = options.Value;
 		private readonly DistributedDemoLogStore _logStore = logStore;
-
+		private readonly ILogger<RabbitMqConsumer> _logger = logger;
 		public async Task Start()
 		{
 			var factory = new ConnectionFactory
@@ -33,9 +34,20 @@ namespace TradeAgent.Consumer
 			{
 				var body = ea.Body.ToArray();
 				var message = Encoding.UTF8.GetString(body);
-				Console.WriteLine($"[x] Received: {message}");
-				await channel.BasicAckAsync(ea.DeliveryTag, false);
-				_logStore.Add($"Consumed message: {message}");
+				var correlationId = ea.BasicProperties?.CorrelationId ?? Guid.NewGuid().ToString();
+
+				try
+				{
+					_logger.LogInformation("Message received from RabbitMQ. CorrelationId={CorrelationId}, Message={Message}", correlationId, message);
+					await channel.BasicAckAsync(ea.DeliveryTag, false);
+					_logStore.Add($"[CONSUMER] CorrelationId={correlationId} | Message consumed: {message}");
+				}
+				catch(Exception ex) 
+				{
+					_logger.LogError(ex,"Error processing message. CorrelationId={CorrelationId}, Message={Message}", correlationId, message);
+					_logStore.Add($"[CONSUMER ERROR] CorrelationId={correlationId} | {ex.Message}");
+					await channel.BasicNackAsync(ea.DeliveryTag, false, requeue: true);
+				}
 			};
 
 			string consumerTag = await channel.BasicConsumeAsync(_options.QueueName, false, consumer);
