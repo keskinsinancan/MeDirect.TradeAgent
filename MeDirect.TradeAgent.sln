@@ -25,7 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeAgent.Consumer", "Trad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeAgent.Logging", "TradeAgent.Logging\TradeAgent.Logging.csproj", "{0EE66F18-A9B3-4490-85C1-EEF4EE023EA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeAgent.Tests", "TradeAgent.Tests\TradeAgent.Tests.csproj", "{93D22D25-D53F-443F-A41E-6949112C2FE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeAgent.Unit.Tests", "TradeAgent.Tests\TradeAgent.Unit.Tests.csproj", "{93D22D25-D53F-443F-A41E-6949112C2FE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tradeagent.Integration.Tests", "Tradeagent.Integrations.Tests\Tradeagent.Integration.Tests.csproj", "{595664E4-094C-4614-8602-25ED4709D590}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,12 +63,17 @@ Global
 		{93D22D25-D53F-443F-A41E-6949112C2FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93D22D25-D53F-443F-A41E-6949112C2FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93D22D25-D53F-443F-A41E-6949112C2FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{595664E4-094C-4614-8602-25ED4709D590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{595664E4-094C-4614-8602-25ED4709D590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{595664E4-094C-4614-8602-25ED4709D590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{595664E4-094C-4614-8602-25ED4709D590}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{93D22D25-D53F-443F-A41E-6949112C2FE2} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{595664E4-094C-4614-8602-25ED4709D590} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD6B9323-0716-4706-A03C-90D2546DF0FC}

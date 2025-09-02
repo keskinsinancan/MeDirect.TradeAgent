@@ -11,7 +11,7 @@ using TradeAgent.Domain.Enums;
 using TradeAgent.Domain.ValueObjects;
 using TradeAgent.Logging;
 
-namespace TradeAgent.Tests.Application
+namespace TradeAgent.Unit.Tests.Application
 {
 	public class TradeServiceTests
 	{

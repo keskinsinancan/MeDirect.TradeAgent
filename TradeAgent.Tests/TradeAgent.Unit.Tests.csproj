@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Integration\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TradeAgent.Application\TradeAgent.Application.csproj" />
     <ProjectReference Include="..\TradeAgent.Domain\TradeAgent.Domain.csproj" />
   </ItemGroup>
