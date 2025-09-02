@@ -8,8 +8,7 @@ namespace TradeAgent.Domain.Events
 			Asset Asset,
 			TradeSide Side,
 			decimal Quantity,
-			decimal Price,
-			string Currency,
+			Money Price,
 			string CounterpartyId,
 			Guid UserId,
 			DateTime ExecutedAtUtc

@@ -79,7 +79,7 @@ namespace TradeAgent.API
 		private static void ConfigureRedis(IServiceCollection services, ConfigurationManager configuration)
 		{
 			services.Configure<RedisOptions>(configuration.GetSection("redis"));
-			services.AddSingleton(provider =>
+			services.AddSingleton<ILogStore>(provider =>
 			{
 				var options = provider.GetRequiredService<IOptions<RedisOptions>>().Value;
 				return new DistributedDemoLogStore(options.REDIS_CONNECTION);

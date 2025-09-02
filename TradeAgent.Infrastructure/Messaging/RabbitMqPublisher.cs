@@ -8,11 +8,11 @@ using TradeAgent.Logging;
 
 namespace TradeAgent.Infrastructure.Messaging
 {
-	public class RabbitMqPublisher(IOptions<RabbitMqOptions> options, ILogger<RabbitMqPublisher> logger, DistributedDemoLogStore logStore)
+	public class RabbitMqPublisher(IOptions<RabbitMqOptions> options, ILogger<RabbitMqPublisher> logger, ILogStore logStore)
 	{
 		private readonly RabbitMqOptions _options = options.Value;
 		private readonly ILogger<RabbitMqPublisher> _logger = logger;
-		private readonly DistributedDemoLogStore _logStore = logStore;
+		private readonly ILogStore _logStore = logStore;
 
 		public async Task Publish<T>(T message, string routingKey) where T : class
 		{

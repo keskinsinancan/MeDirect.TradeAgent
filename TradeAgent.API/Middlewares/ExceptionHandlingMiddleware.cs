@@ -4,11 +4,11 @@ using TradeAgent.Logging;
 
 namespace TradeAgent.API.Middlewares
 {
-	public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, DistributedDemoLogStore logStore)
+	public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, ILogStore logStore)
 	{
 		private readonly RequestDelegate _next = next;
 		private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
-		private readonly DistributedDemoLogStore _logStore = logStore;
+		private readonly ILogStore _logStore = logStore;
 
 		public async Task Invoke(HttpContext context)
 		{

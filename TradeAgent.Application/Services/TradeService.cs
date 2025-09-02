@@ -11,12 +11,12 @@ using TradeAgent.Logging;
 namespace TradeAgent.Application.Services
 {
 	public sealed class TradeService(ITradeRepository tradeRepository, IUnitOfWork unitOfWork,
-										ILogger<TradeService> logger, DistributedDemoLogStore logStore) : ITradeService
+										ILogger<TradeService> logger, ILogStore logStore) : ITradeService
 	{
 		private readonly ITradeRepository _tradeRepository = tradeRepository;
 		private readonly IUnitOfWork _unitOfWork = unitOfWork;
 		private readonly ILogger<TradeService> _logger = logger;
-		private readonly DistributedDemoLogStore _logStore = logStore;
+		private readonly ILogStore _logStore = logStore;
 		public async Task<TradeDto> RecordTradeAsync(CreateTradeRequest request, CancellationToken cancellationToken = default)
 		{
 			var tradeId = Guid.NewGuid();
@@ -26,8 +26,7 @@ namespace TradeAgent.Application.Services
 					asset: Asset.Create(request.AssetName, request.AssetSymbol),
 					side: Enum.Parse<TradeSide>(request.Side, ignoreCase: true),
 					quantity: request.Quantity,
-					price: request.Price,
-					currency: request.Currency,
+					price: Money.Create(request.Price, request.Currency),
 					counterpartyId: request.CounterpartyId,
 					userId: request.UserId,
 					executedAtUtc: DateTime.UtcNow
@@ -58,7 +57,7 @@ namespace TradeAgent.Application.Services
 			{
 				var trades = await _tradeRepository.GetAllAsync(cancellationToken);
 				_logger.LogInformation("Retrieved all trades. Count={Count}", trades.Count);
-				return trades.Select(MapToDto).ToList();
+				return [.. trades.Select(MapToDto)];
 			}
 			catch (Exception ex)
 			{
@@ -93,8 +92,8 @@ namespace TradeAgent.Application.Services
 			AssetSymbol = trade.Asset.Symbol,
 			Side = trade.Side.ToString(),
 			Quantity = trade.Quantity,
-			Price = trade.Price,
-			Currency = trade.Currency,
+			Price = trade.Price.Amount,
+			Currency = trade.Price.Currency,
 			CounterpartyId = trade.CounterpartyId,
 			UserId = trade.UserId,
 			ExecutedAtUtc = trade.ExecutedAtUtc

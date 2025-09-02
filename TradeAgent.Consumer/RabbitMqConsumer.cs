@@ -7,10 +7,10 @@ using TradeAgent.Logging;
 
 namespace TradeAgent.Consumer
 {
-	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options, DistributedDemoLogStore logStore, ILogger<RabbitMqConsumer> logger)
+	public class RabbitMqConsumer(IOptions<RabbitMqOptions> options, ILogStore logStore, ILogger<RabbitMqConsumer> logger)
 	{
 		private readonly RabbitMqOptions _options = options.Value;
-		private readonly DistributedDemoLogStore _logStore = logStore;
+		private readonly ILogStore _logStore = logStore;
 		private readonly ILogger<RabbitMqConsumer> _logger = logger;
 		public async Task Start()
 		{

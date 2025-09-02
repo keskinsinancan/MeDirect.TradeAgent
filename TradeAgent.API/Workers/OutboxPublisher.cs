@@ -10,12 +10,12 @@ namespace TradeAgent.API.Workers
 		IServiceScopeFactory scopeFactory,
 		RabbitMqPublisher publisher,
 		ILogger<OutboxPublisher> logger,
-		DistributedDemoLogStore logStore ) : BackgroundService
+		ILogStore logStore ) : BackgroundService
 	{
 		private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 		private readonly RabbitMqPublisher _publisher = publisher;
 		private readonly ILogger<OutboxPublisher> _logger = logger;
-		private readonly DistributedDemoLogStore _logStore = logStore;
+		private readonly ILogStore _logStore = logStore;
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{

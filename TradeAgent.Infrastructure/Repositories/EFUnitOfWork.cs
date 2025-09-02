@@ -4,15 +4,10 @@ using TradeAgent.Infrastructure.Data;
 
 namespace TradeAgent.Infrastructure.Repositories
 {
-	public class EfUnitOfWork : IUnitOfWork, IDisposable
+	public class EfUnitOfWork(TradeAgentDbContext db) : IUnitOfWork, IDisposable
 	{
-		private readonly TradeAgentDbContext _db;
+		private readonly TradeAgentDbContext _db = db;
 		private IDbContextTransaction? _transaction;
-
-		public EfUnitOfWork(TradeAgentDbContext db)
-		{
-			_db = db;
-		}
 
 		public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
 		{

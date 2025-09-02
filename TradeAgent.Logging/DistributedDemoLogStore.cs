@@ -2,7 +2,7 @@
 
 namespace TradeAgent.Logging
 {
-	public class DistributedDemoLogStore
+	public class DistributedDemoLogStore : ILogStore
 	{
 		private readonly IDatabase _db;
 		private const string Key = "DemoLogs";

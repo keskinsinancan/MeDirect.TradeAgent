@@ -22,7 +22,7 @@ class Program
 				services.AddSingleton<RabbitMqConsumer>();
 				services.AddSingleton<DistributedDemoLogStore>();
 				services.Configure<RedisOptions>(context.Configuration.GetSection("Redis"));
-				services.AddSingleton(provider =>
+				services.AddSingleton<ILogStore>(provider =>
 				{
 					var options = provider.GetRequiredService<IOptions<RedisOptions>>().Value;
 					return new DistributedDemoLogStore(options.REDIS_CONNECTION);

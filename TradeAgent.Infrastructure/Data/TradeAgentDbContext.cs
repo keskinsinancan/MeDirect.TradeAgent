@@ -55,10 +55,14 @@ namespace TradeAgent.Infrastructure.Data
 					i.Property(p => p.Symbol).HasColumnName("AssetSymbol").IsRequired();
 				});
 
+				x.OwnsOne(t => t.Price, p =>
+				{
+					p.Property(m => m.Amount).HasColumnName("PriceAmount").IsRequired();
+					p.Property(m => m.Currency).HasColumnName("PriceCurrency").IsRequired();
+				});
+
 				x.Property(t => t.Side).IsRequired();
 				x.Property(t => t.Quantity).IsRequired();
-				x.Property(t => t.Price).IsRequired();
-				x.Property(t => t.Currency).IsRequired();
 				x.Property(t => t.CounterpartyId).IsRequired();
 				x.Property(t => t.ExecutedAtUtc).IsRequired();
 			});

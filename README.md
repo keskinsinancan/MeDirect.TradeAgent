@@ -63,7 +63,7 @@ This project follows DDD principles to ensure that business logic is central, co
 
 1. **Clone the repository**
 2. **Configure RabbitMQ and database settings** in `appsettings.json` files.
-3. docker compose to fire up PostgreSql Server, PG Admin, RabbitMq server and RabbitMq admin panel 
+3. docker compose to fire up PostgreSql Server, PG Admin, RabbitMq server, RabbitMq admin panel and redis
 4. **Run the launch profile "Api + Consumer"** to start the HTTP server and background workers.
 5. See the messages are consumed by the consumer in the console logs.
 

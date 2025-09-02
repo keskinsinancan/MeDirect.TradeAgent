@@ -5,14 +5,9 @@ namespace TradeAgent.API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class DemoLogsController : ControllerBase
+	public class DemoLogsController(ILogStore logStore) : ControllerBase
 	{
-		private readonly DistributedDemoLogStore _logStore;
-
-		public DemoLogsController(DistributedDemoLogStore logStore)
-		{
-			_logStore = logStore;
-		}
+		private readonly ILogStore _logStore = logStore;
 
 		[HttpGet]
 		public IActionResult GetLogs()
