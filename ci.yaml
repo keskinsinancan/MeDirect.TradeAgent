@@ -1,73 +1,55 @@
-version: "3.9"
+name: CI
 
-services:
-  postgres:
-    image: postgres:latest
-    container_name: local-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: TradeAgentDb
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: local-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin123
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin123
+          POSTGRES_DB: TradeAgentDb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+      rabbitmq:
+        image: rabbitmq:3-management
+        env:
+          RABBITMQ_DEFAULT_USER: admin
+          RABBITMQ_DEFAULT_PASS: admin123
+        ports:
+          - 5672:5672
+          - 15672:15672
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
 
-  redis:
-    image: redis:latest
-    container_name: tradeagent-redis
-    ports:
-      - "6379:6379"
-    restart: always
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
 
-  api:
-    build:
-      context: ./TradeAgent.API
-      dockerfile: Dockerfile
-    container_name: tradeagent-api
-    ports:
-      - "5000:5000"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultDbConnection=Host=postgres;Port=5432;Database=TradeAgentDb;Username=postgres;Password=admin123
-      - Redis__REDIS_CONNECTION=redis:6379
-      - RabbitMq__Host=rabbitmq
-      - RabbitMq__Port=5672
-      - RabbitMq__Username=admin
-      - RabbitMq__Password=admin123
-    depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      - name: Restore dependencies
+        run: dotnet restore
 
-  consumer:
-    build:
-      context: ./TradeAgent.Consumer
-      dockerfile: Dockerfile
-    container_name: tradeagent-consumer
-    environment:
-      - Redis__REDIS_CONNECTION=redis:6379
-      - RabbitMq__Host=rabbitmq
-      - RabbitMq__Port=5672
-      - RabbitMq__Username=admin
-      - RabbitMq__Password=admin123
-    depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      - name: Build
+        run: dotnet build --no-restore
 
-volumes:
-  pgdata:
-  rabbitmq_data:
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
