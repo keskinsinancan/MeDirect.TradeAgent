@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Serilog.Filters;
 using TradeAgent.API.Middlewares;
 using TradeAgent.API.Workers;
 using TradeAgent.Application.Abstractions.Repositories;
@@ -32,7 +31,10 @@ namespace TradeAgent.API
 			ConfigureRedis(services, configuration);
 			ConfigureSerilog(builder);
 			builder.Host.UseTradeAgentLogging("TradeAgent.API");
+			builder.WebHost.UseUrls("http://0.0.0.0:5000");
 			var app = builder.Build();
+
+			ConfigureMigrations(app);
 
 			Configure(app, app.Environment);
 			app.Run();
@@ -95,6 +97,13 @@ namespace TradeAgent.API
 					.Enrich.FromLogContext()
 					.WriteTo.Console();
 			});
+		}
+
+		private static void ConfigureMigrations(WebApplication app)
+		{
+			using var scope = app.Services.CreateScope();
+			var db = scope.ServiceProvider.GetRequiredService<TradeAgentDbContext>();
+			db.Database.Migrate();
 		}
 		private static void Configure(WebApplication app, IHostEnvironment env)
 		{
