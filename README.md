@@ -1,116 +1,180 @@
-# MeDirect.TradeAgent
+﻿# 🚀 MeDirect.TradeAgent
 
-A scalable trading management platform for MeDirect, designed with a clean architecture, Domain-Driven Design (DDD), and asynchronous event-driven communication using RabbitMQ.
+A **scalable trading management platform** for MeDirect, designed with **Clean Architecture**, **Domain-Driven Design (DDD)**, and **asynchronous event-driven communication** using **RabbitMQ**.  
 
-## Architecture Overview
+---
 
-- **Domain Layer:**  
-  Contains core business entities, value objects, and domain events, encapsulating business rules and logic. This layer models the core of the business and enforces invariants.
+## 🏗️ Architecture Overview
 
-- **Application Layer:**  
-  Handles application logic, data transfer objects (DTOs), service orchestration, and defines abstractions for repositories and messaging. Coordinates use cases and business workflows.
+```plantuml
+@startuml
+package "API Layer" {
+  [API Controllers] --> [Application Services]
+  [Background Workers] --> [RabbitMQ Publisher]
+}
 
-- **Infrastructure Layer:**  
-  Implements data access (using Entity Framework Core), messaging (RabbitMQ integration), and other technical concerns. Fulfills contracts defined in the application layer.
+package "Application Layer" {
+  [Application Services] --> [Repositories <<interface>>]
+  [Application Services] --> [Message Bus <<interface>>]
+}
 
-- **API Layer:**  
-  Exposes HTTP endpoints and background workers for processing and publishing events. Handles incoming requests and orchestrates application services.
+package "Domain Layer" {
+  [Entities] --> [Domain Events]
+  [Value Objects]
+}
 
-- **Consumer:**  
-  A separate service that listens to RabbitMQ messages and processes them asynchronously, enabling decoupled and scalable event handling.
+package "Infrastructure Layer" {
+  [EF Core Repository] -up-|> [Repositories <<interface>>]
+  [RabbitMQ Integration] -up-|> [Message Bus <<interface>>]
+}
 
-## Domain-Driven Design (DDD) in This Project
+package "Consumer Service" {
+  [RabbitMQ Subscriber] --> [Application Services]
+}
 
-This project follows DDD principles to ensure that business logic is central, consistent, and decoupled from infrastructure and application concerns.
+package "Logging" {
+  [Serilog] --> [Redis Log Store]
+  [API Log Endpoint] --> [Redis Log Store]
+}
 
-- **Rich Domain Model:**  
-  The `TradeAgent.Domain` project contains entities (e.g., `Trade`), value objects, and domain events (e.g., `TradeExecutedEvent`). Business rules are enforced within these models.
+[Domain Events] --> [RabbitMQ Publisher]
+[RabbitMQ Subscriber] --> [Application Services]
+@enduml
+```
 
-- **Domain Events:**  
-  Significant business actions raise domain events, which are handled asynchronously to enable integration and eventual consistency.
+✨ **Highlights**  
+- Core **business rules** live in the **Domain Layer**  
+- **Application Layer** orchestrates workflows  
+- **Infrastructure Layer** → EF Core + RabbitMQ + Redis  
+- **API Layer** exposes endpoints & publishes events  
+- **Consumer Service** processes messages asynchronously  
+- **Logging Layer** centralizes logs in Redis  
 
-- **Separation of Concerns:**  
-  DDD encourages a clear separation between business logic and technical details, resulting in a modular, maintainable, and testable codebase.
+---
 
-- **Outbox Pattern:**  
-  Ensures reliable event delivery by storing domain events in an outbox table and publishing them asynchronously, maintaining consistency between the database and message broker.
+## 📦 Messaging Flow
 
-## Key Features
+```plantuml
+@startuml
+actor User
+participant API
+participant "Outbox Table" as Outbox
+participant RabbitMQ
+participant Consumer
 
-- Clean, maintainable, and testable architecture
-- DDD approach with rich domain models and domain events
-- Asynchronous event publishing and consumption via RabbitMQ
-- Outbox pattern for reliable event delivery
-- Modular design for easy extension and scaling
+User -> API : Execute Trade
+API -> Outbox : Save Trade + Event
+API -> RabbitMQ : Publish Event (async)
+RabbitMQ -> Consumer : Deliver Event
+Consumer -> Consumer : Process Trade Event
+@enduml
+```
 
-## Messaging Flow
+---
 
-1. **Trade Execution:**  
-   When a trade is executed, a domain event is raised in the domain layer.
-2. **Event Publishing:**  
-   The event is persisted and published to RabbitMQ by the API's background worker.
-3. **Event Consumption:**  
-   The Consumer service listens to the queue, processes incoming events, and performs further actions.
+## 🌐 Deployment View
 
-## Configuration
+```plantuml
+@startuml
+node "Docker Host" {
+  node "API Service" {
+    [TradeAgent.API]
+  }
+  node "Consumer Service" {
+    [TradeAgent.Consumer]
+  }
+  node "Logging Service" {
+    [TradeAgent.Logging]
+  }
+  database "PostgreSQL"
+  queue "RabbitMQ"
+  storage "Redis"
+}
 
-- **RabbitMQ:**  
-  Connection settings are managed via `appsettings.json` in both API and Consumer projects.
-- **Database:**  
-  Uses Entity Framework Core for data persistence.
+[TradeAgent.API] --> PostgreSQL
+[TradeAgent.API] --> RabbitMQ
+[TradeAgent.API] --> Redis
+[TradeAgent.Consumer] --> RabbitMQ
+[TradeAgent.Consumer] --> Redis
+[TradeAgent.Logging] --> Redis
+@enduml
+```
 
-## Getting Started
+---
 
-1. **Clone the repository**
-2. **Configure RabbitMQ and database settings** in `appsettings.json` files.
-3. docker compose to fire up PostgreSql Server, PG Admin, RabbitMq server, RabbitMq admin panel and redis
-4. **Run the launch profile "Api + Consumer"** to start the HTTP server and background workers.
-5. See the messages are consumed by the consumer in the console logs.
+## ✨ Key Features
 
-## Projects
+- 🧼 Clean, maintainable, and testable architecture  
+- 🏛️ Rich domain models & domain events (DDD)  
+- 📨 Asynchronous event publishing & consumption via RabbitMQ  
+- 📦 Outbox pattern for reliable delivery  
+- 🪵 Centralized distributed logging with Redis + Serilog  
+- 🐳 Containerized deployment with Docker Compose  
+- ✅ Unit + integration tests  
+- ⚡ CI/CD with GitHub Actions  
 
-- `TradeAgent.Domain` � Business entities, value objects, and domain events
-- `TradeAgent.Application` � DTOs, services, and abstractions
-- `TradeAgent.Infrastructure` � Data and messaging implementations
-- `TradeAgent.API` � Web API and background workers
-- `TradeAgent.Consumer` � RabbitMQ event consumer
-- `TradeAgent.Logging` � Centralized logging uses redis to keep logs
+---
 
-## Logging Architecture
+## 🧱 SOLID Principles
 
-### Overview
+- **SRP 🧩** – One responsibility per class  
+- **OCP ➕** – Open for extension, closed for modification  
+- **LSP 🔄** – Subtypes replace supertypes safely  
+- **ISP ✂️** – Small, focused interfaces  
+- **DIP 🔌** – High-level modules depend on abstractions  
 
-This project uses **Serilog** for structured logging and a custom logging infrastructure to store and expose logs. All log messages are written to a Redis data store, enabling distributed log access and real-time log retrieval. 
-The logging logic is encapsulated in the `TradeAgent.Logging` project.
+---
 
-### How Logging Works
+## 🐳 Containerization
 
-- **Serilog Integration:**  
-  Serilog is configured as the main logging provider in both the API and Consumer projects. It captures log events throughout the application lifecycle.
+`docker-compose.yaml` provisions:  
+- 🗄 PostgreSQL + PGAdmin  
+- 📨 RabbitMQ + Management UI  
+- 🔴 Redis for logging  
+- 🌐 API + Consumer services  
 
-- **Redis Log Storage:**  
-  The `TradeAgent.Logging` project contains the `DistributedDemoLogStore` class, which is responsible for writing log entries to a Redis instance. This allows logs to be shared and accessed across multiple services and instances.
+Start all services:  
 
-- **API Log Exposure:**  
-  The API project exposes an endpoint via the `DemoLogsController`. This controller retrieves log entries from Redis using the log store and returns them to clients, enabling real-time log monitoring and troubleshooting.
+```bash
+docker compose up --build
+```
 
-### Configuration
+---
 
-- **Redis Connection:**  
-  Redis connection settings are managed via the `RedisOptions` class and configured in the `appsettings.json` file for each project.
+## 🔥 Logging Architecture
 
-- **Serilog Settings:**  
-  Serilog sinks and settings are also defined in `appsettings.json`, allowing flexible log routing and formatting.
+- 📊 **Serilog** → structured logs  
+- 🪣 Logs stored in **Redis**  
+- 🌐 Logs retrievable from `/api/demologs`  
 
-### Example Usage
+---
 
-- Logs generated anywhere in the system are automatically sent to Redis via Serilog and the custom log store.
-- To view logs, send a request to the API�s `/api/demologs` endpoint (or the relevant route defined in `DemoLogsController`).
+## 🧪 Testing
 
-### Projects Involved
+- 🧩 **Unit Tests** → business logic & services  
+- 🔗 **Integration Tests** → API, messaging, persistence  
 
-- `TradeAgent.Logging` � Implements the distributed log store and Redis integration.
-- `TradeAgent.API` � Exposes log retrieval endpoints.
-- `TradeAgent.Consumer` � Writes logs to Redis via Serilog and the logging project.
+---
 
-This approach provides centralized, scalable, and real-time logging for all services in the platform.
+## ⚡ CI/CD with GitHub Actions
+
+- ✅ Builds & tests on each push/PR  
+- 🚦 Prevents regressions & ensures quality  
+
+---
+
+## 📂 Projects
+
+- `TradeAgent.Domain` 🏛️ – Entities, Value Objects, Domain Events  
+- `TradeAgent.Application` 🎯 – DTOs, Services, Abstractions  
+- `TradeAgent.Infrastructure` 🔧 – EF Core, RabbitMQ, Redis  
+- `TradeAgent.API` 🌐 – Web API + Background Workers  
+- `TradeAgent.Consumer` 📥 – RabbitMQ Consumer Service  
+- `TradeAgent.Logging` 🪵 – Centralized Logging  
+- `TradeAgent.Tests` ✅ – Unit & Integration Tests  
+
+---
+
+## 📜 License
+
+Licensed under the **MIT License**.
