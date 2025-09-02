@@ -26,7 +26,7 @@ A **scalable trading management platform** for MeDirect, designed with **Clean A
 
 ## 🌐 Deployment View
 
-![Deployment](docs/deployment.png)
+![Deployment](docs/Deployment.png)
 
 ---
 
@@ -62,10 +62,34 @@ A **scalable trading management platform** for MeDirect, designed with **Clean A
 - 🌐 API + Consumer services  
 
 Start all services:  
-
+Takes a few minutes to setup all components in the first run.
 ```bash
 docker compose up --build
 ```
+
+---
+
+## 🗄️ DB-First Approach & Automated Migrations
+
+- **📝 DBrist Approach**  
+  The platform follows the **DBrist approach**, emphasizing **versioned and automated database schema changes**.  
+  ✅ Ensures the database state is always in sync with the application code  
+  ✅ Reduces manual intervention  
+  ✅ Supports continuous delivery  
+
+- **⚡ Automated Migrations on Startup**  
+  On application startup, **Entity Framework Core migrations** are automatically applied.  
+  This ensures the database schema is always **up-to-date**, providing consistency and reliability across environments.  
+
+  Example in `Program.cs`:
+
+  ```csharp
+  using (var scope = app.Services.CreateScope())
+  {
+      var db = scope.ServiceProvider.GetRequiredService<TradeAgentDbContext>();
+      db.Database.Migrate();
+  }
+
 
 ---
 
@@ -102,6 +126,53 @@ This approach provides centralized, scalable, and real-time logging for all serv
 - `TradeAgent.Consumer` 📥 – RabbitMQ Consumer Service  
 - `TradeAgent.Logging` 🪵 – Centralized Logging  
 - `TradeAgent.Tests` ✅ – Unit & Integration Tests  
+
+---
+
+---
+
+## 🧩 Microservice Architecture
+
+MeDirect.TradeAgent is a **modern microservice-based system** demonstrating scalability, resilience, and maintainability:
+
+- **⚙️ Service Independence**  
+  The **API** and **Consumer** are separate deployable services, each with its own responsibility and lifecycle.  
+  ✅ Enables independent scaling, deployment, and fault isolation.  
+
+- **🔗 Decoupled Communication**  
+  Services communicate **asynchronously** via RabbitMQ, following **event-driven patterns**.  
+  ✅ Reduces direct dependencies and allows loose coupling between components.  
+
+- **📦 Distributed Data & State**  
+  Each service manages its **own data and configuration**.  
+  🪵 Centralized logging is handled via Redis, while business data remains isolated per service.  
+
+- **🐳 Containerization**  
+  All services and dependencies (**PostgreSQL, RabbitMQ, Redis**) are containerized with Docker Compose.  
+  ✅ Supports easy orchestration, scaling, and local development.  
+
+- **⚡ Resilience & Scalability**  
+  Event-driven communication and the **outbox pattern** ensure reliable message delivery and processing under load or failure conditions.  
+
+- **👁️ Observability**  
+  Centralized logging (Serilog + Redis) and API endpoints for log retrieval provide visibility into **service health and activity**.  
+
+- **🚀 Automated Migrations & CI/CD**  
+  Database migrations are applied automatically on startup, and **GitHub Actions** handle automated builds, tests, and deployments.  
+
+- **🧪 Testing**  
+  Unit and integration tests validate each service independently and in combination, supporting robust, maintainable development.  
+
+**📌 Summary:**  
+This architecture embodies core microservice principles:  
+- Independent services  
+- Asynchronous communication  
+- Decentralized data  
+- Containerization  
+- Observability  
+- Automation  
+
+It is designed for **scalable, resilient, and maintainable enterprise solutions**.
 
 ---
 
