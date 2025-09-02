@@ -104,7 +104,7 @@ namespace Tradeagent.Integration.Tests
 		[Fact]
 		public async Task Redis_Should_Store_Logs()
 		{
-			var logStore = _serviceProvider.GetRequiredService<DistributedDemoLogStore>();
+			var logStore = _serviceProvider.GetRequiredService<ILogStore>();
 			logStore.Add("Integration test log");
 
 			var redis = await ConnectionMultiplexer.ConnectAsync(_fixture.RedisConnectionString);
