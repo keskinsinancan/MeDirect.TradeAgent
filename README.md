@@ -4,6 +4,10 @@ A **scalable trading management platform** for MeDirect, designed with **Clean A
 
 ---
 
+https://github.com/keskinsinancan/MeDirect.TradeAgent
+
+---
+
 ## 🏗️ Architecture Overview
 
 ![Architecture](docs/architecture.png)
@@ -123,6 +127,8 @@ This approach provides centralized, scalable, and real-time logging for all serv
 
 - ✅ Builds & tests on each push/PR  
 - 🚦 Prevents regressions & ensures quality  
+
+https://github.com/keskinsinancan/MeDirect.TradeAgent/actions
 
 ---
 
