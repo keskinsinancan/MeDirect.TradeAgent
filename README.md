@@ -6,41 +6,7 @@ A **scalable trading management platform** for MeDirect, designed with **Clean A
 
 ## 🏗️ Architecture Overview
 
-```plantuml
-@startuml
-package "API Layer" {
-  [API Controllers] --> [Application Services]
-  [Background Workers] --> [RabbitMQ Publisher]
-}
-
-package "Application Layer" {
-  [Application Services] --> [Repositories <<interface>>]
-  [Application Services] --> [Message Bus <<interface>>]
-}
-
-package "Domain Layer" {
-  [Entities] --> [Domain Events]
-  [Value Objects]
-}
-
-package "Infrastructure Layer" {
-  [EF Core Repository] -up-|> [Repositories <<interface>>]
-  [RabbitMQ Integration] -up-|> [Message Bus <<interface>>]
-}
-
-package "Consumer Service" {
-  [RabbitMQ Subscriber] --> [Application Services]
-}
-
-package "Logging" {
-  [Serilog] --> [Redis Log Store]
-  [API Log Endpoint] --> [Redis Log Store]
-}
-
-[Domain Events] --> [RabbitMQ Publisher]
-[RabbitMQ Subscriber] --> [Application Services]
-@enduml
-```
+![Architecture](docs/architecture.png)
 
 ✨ **Highlights**  
 - Core **business rules** live in the **Domain Layer**  
@@ -54,51 +20,13 @@ package "Logging" {
 
 ## 📦 Messaging Flow
 
-```plantuml
-@startuml
-actor User
-participant API
-participant "Outbox Table" as Outbox
-participant RabbitMQ
-participant Consumer
-
-User -> API : Execute Trade
-API -> Outbox : Save Trade + Event
-API -> RabbitMQ : Publish Event (async)
-RabbitMQ -> Consumer : Deliver Event
-Consumer -> Consumer : Process Trade Event
-@enduml
-```
+![Messaging Flow](docs/messaging-flow.png)
 
 ---
 
 ## 🌐 Deployment View
 
-```plantuml
-@startuml
-node "Docker Host" {
-  node "API Service" {
-    [TradeAgent.API]
-  }
-  node "Consumer Service" {
-    [TradeAgent.Consumer]
-  }
-  node "Logging Service" {
-    [TradeAgent.Logging]
-  }
-  database "PostgreSQL"
-  queue "RabbitMQ"
-  storage "Redis"
-}
-
-[TradeAgent.API] --> PostgreSQL
-[TradeAgent.API] --> RabbitMQ
-[TradeAgent.API] --> Redis
-[TradeAgent.Consumer] --> RabbitMQ
-[TradeAgent.Consumer] --> Redis
-[TradeAgent.Logging] --> Redis
-@enduml
-```
+![Deployment](docs/deployment.png)
 
 ---
 
@@ -117,11 +45,11 @@ node "Docker Host" {
 
 ## 🧱 SOLID Principles
 
-- **SRP 🧩** – One responsibility per class  
-- **OCP ➕** – Open for extension, closed for modification  
-- **LSP 🔄** – Subtypes replace supertypes safely  
-- **ISP ✂️** – Small, focused interfaces  
-- **DIP 🔌** – High-level modules depend on abstractions  
+- **SRP 🧩** – Each class and module has one responsibility. For example, domain entities encapsulate business logic, while services handle orchestration, and repositories manage data access.
+- **OCP ➕** – The system is open for extension but closed for modification. New features (such as new event types or logging sinks) can be added without changing existing code, thanks to abstractions and interfaces.
+- **LSP 🔄** –  Components and services are designed so that derived types can be substituted for their base types without affecting correctness. Interfaces and base classes are used consistently across layers.
+- **ISP ✂️** –  Interfaces are kept focused and specific. For example, repository and messaging interfaces define only the methods relevant to their responsibilities, avoiding unnecessary dependencies.
+- **DIP 🔌** –  High-level modules do not depend on low-level modules; both depend on abstractions. Dependency injection is used throughout the application, allowing easy swapping of implementations (e.g., for testing or infrastructure changes).
 
 ---
 
@@ -143,16 +71,18 @@ docker compose up --build
 
 ## 🔥 Logging Architecture
 
-- 📊 **Serilog** → structured logs  
-- 🪣 Logs stored in **Redis**  
+- 📊 **Serilog** → Serilog is configured as the main logging provider in both the API and Consumer projects. It captures log events throughout the application lifecycle.
+- 🪣 Logs stored in **Redis**   The `TradeAgent.Logging` project contains the `DistributedDemoLogStore` class, which is responsible for writing log entries to a Redis instance. This allows logs to be shared and accessed across multiple services and instances.
 - 🌐 Logs retrievable from `/api/demologs`  
+
+This approach provides centralized, scalable, and real-time logging for all services in the platform.
 
 ---
 
 ## 🧪 Testing
 
-- 🧩 **Unit Tests** → business logic & services  
-- 🔗 **Integration Tests** → API, messaging, persistence  
+- 🧩 **Unit Tests** → The solution includes unit tests for core business logic, services, and utility classes. These tests ensure correctness and reliability of individual components.
+- 🔗 **Integration Tests** → Integration tests validate the interaction between components, such as messaging, data persistence, and API endpoints. They ensure the system works as expected in real scenarios.
 
 ---
 

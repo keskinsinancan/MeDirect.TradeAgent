@@ -15,7 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9FA4CD2A-8E71-455A-B020-ABF8A49E4D84}"
 	ProjectSection(SolutionItems) = preProject
+		docs\architecture.png = docs\architecture.png
+		docs\Deployment.png = docs\Deployment.png
 		README.md = README.md
+		docs\messaging-flow.png = docs\messaging-flow.png
 		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
