@@ -69,6 +69,15 @@ docker compose up --build
 
 ---
 
+## 🌐 Accessing the Application
+
+Once the containers are up and running, the API service is reachable from your browser at [http://localhost:5000/swagger/index.html].  
+This allows you to interact with the platform's endpoints, monitor logs, and verify message processing in real time.
+
+---
+
+---
+
 ## 🗄️ DB-First Approach & Automated Migrations
 
 - **📝 DBrist Approach**  
