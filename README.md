@@ -107,6 +107,32 @@ This allows you to interact with the platform's endpoints, monitor logs, and ver
 
 ---
 
+## 🧪 Local Testing & Debugging
+
+To test and debug locally with full visibility and control:
+
+1. **🐳 Start Containers:**  
+   Use Docker Compose to start all dependencies:
+
+```bash
+docker compose up --build
+```
+This will provision PostgreSQL, RabbitMQ, Redis, and the API/Consumer services.
+
+2. **🛑 Stop API & Consumer Containers:**  
+Open Docker Desktop **or use the Docker command line** to **stop the API and Consumer containers**.  
+Make sure **Redis, RabbitMQ, and PostgreSQL** containers remain running.
+
+3. **🖥️ Debug in Visual Studio:**  
+- Open the solution in Visual Studio.
+- Set **multiple startup projects**: select both API and Consumer.
+- (✨ Recommended) **Create a launch profile** for running API and Consumer together.
+- Start debugging. This allows you to set breakpoints, inspect variables, and step through code in both services.
+
+This workflow lets you leverage containerized infrastructure while using the full power of Visual Studio for development and debugging.
+
+---
+
 ## 🔥 Logging Architecture
 
 - 📊 **Serilog** → Serilog is configured as the main logging provider in both the API and Consumer projects. It captures log events throughout the application lifecycle.
